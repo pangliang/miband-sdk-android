@@ -1,5 +1,6 @@
 package com.zhaoxiaodan.miband;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
@@ -8,15 +9,18 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 
 class BluetoothIO extends BluetoothGattCallback
 {
-	private static final String	TAG	= "BluetoothIO";
-	BluetoothGatt				gatt;
-	ActionCallback				currentCallback;
+	private static final String		TAG				= "BluetoothIO";
+	BluetoothGatt					gatt;
+	ActionCallback					currentCallback;
+	
+	HashMap<UUID, NotifyListener>	notifyListeners	= new HashMap<UUID, NotifyListener>();
 	
 	public void connect(final Context context, final ActionCallback callback)
 	{
@@ -64,19 +68,22 @@ class BluetoothIO extends BluetoothGattCallback
 	{
 		try
 		{
+			this.currentCallback = callback;
 			BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(uuid);
 			if (null == chara)
 			{
-				callback.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
+				this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
 				return;
 			}
-			this.currentCallback = callback;
 			chara.setValue(value);
-			this.gatt.writeCharacteristic(chara);
+			if (false == this.gatt.writeCharacteristic(chara))
+			{
+				this.onFail(-1, "gatt.writeCharacteristic() return false");
+			}
 		} catch (Throwable tr)
 		{
 			Log.e(TAG, "writeCharacteristic", tr);
-			callback.onFail(-1, tr.getMessage());
+			this.onFail(-1, tr.getMessage());
 		}
 	}
 	
@@ -84,18 +91,21 @@ class BluetoothIO extends BluetoothGattCallback
 	{
 		try
 		{
+			this.currentCallback = callback;
 			BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(uuid);
 			if (null == chara)
 			{
-				callback.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
+				this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
 				return;
 			}
-			this.currentCallback = callback;
-			this.gatt.readCharacteristic(chara);
+			if (false == this.gatt.readCharacteristic(chara))
+			{
+				this.onFail(-1, "gatt.readCharacteristic() return false");
+			}
 		} catch (Throwable tr)
 		{
 			Log.e(TAG, "readCharacteristic", tr);
-			callback.onFail(-1, tr.getMessage());
+			this.onFail(-1, tr.getMessage());
 		}
 	}
 	
@@ -108,9 +118,25 @@ class BluetoothIO extends BluetoothGattCallback
 		} catch (Throwable tr)
 		{
 			Log.e(TAG, "readRssi", tr);
-			callback.onFail(-1, tr.getMessage());
+			this.onFail(-1, tr.getMessage());
 		}
 		
+	}
+	
+	public void setNotifyListener(UUID characteristicId, NotifyListener listener)
+	{
+		if(this.notifyListeners.containsKey(characteristicId))
+			return;
+		
+		BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(characteristicId);
+		if (chara == null)
+			return;
+		
+		this.gatt.setCharacteristicNotification(chara, true);
+		BluetoothGattDescriptor descriptor = chara.getDescriptor(Profile.UUID_DESCRIPTOR_UPDATE_NOTIFICATION);
+		descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+		this.gatt.writeDescriptor(descriptor);
+		this.notifyListeners.put(characteristicId, listener);
 	}
 	
 	@Override
@@ -130,10 +156,10 @@ class BluetoothIO extends BluetoothGattCallback
 		super.onCharacteristicRead(gatt, characteristic, status);
 		if (BluetoothGatt.GATT_SUCCESS == status)
 		{
-			this.currentCallback.onSuccess(characteristic);
+			this.onSuccess(characteristic);
 		} else
 		{
-			this.currentCallback.onFail(status, "onCharacteristicRead fail");
+			this.onFail(status, "onCharacteristicRead fail");
 		}
 	}
 	
@@ -143,10 +169,10 @@ class BluetoothIO extends BluetoothGattCallback
 		super.onCharacteristicWrite(gatt, characteristic, status);
 		if (BluetoothGatt.GATT_SUCCESS == status)
 		{
-			this.currentCallback.onSuccess(characteristic);
+			this.onSuccess(characteristic);
 		} else
 		{
-			this.currentCallback.onFail(status, "onCharacteristicWrite fail");
+			this.onFail(status, "onCharacteristicWrite fail");
 		}
 	}
 	
@@ -156,10 +182,10 @@ class BluetoothIO extends BluetoothGattCallback
 		super.onReadRemoteRssi(gatt, rssi, status);
 		if (BluetoothGatt.GATT_SUCCESS == status)
 		{
-			this.currentCallback.onSuccess(rssi);
+			this.onSuccess(rssi);
 		} else
 		{
-			this.currentCallback.onFail(status, "onCharacteristicRead fail");
+			this.onFail(status, "onCharacteristicRead fail");
 		}
 	}
 	
@@ -170,11 +196,41 @@ class BluetoothIO extends BluetoothGattCallback
 		if (status == BluetoothGatt.GATT_SUCCESS)
 		{
 			this.gatt = gatt;
-			this.currentCallback.onSuccess(null);
+			this.onSuccess(null);
 		} else
 		{
-			this.currentCallback.onFail(status, "onServicesDiscovered fail");
+			this.onFail(status, "onServicesDiscovered fail");
 		}
-		this.currentCallback = null;
 	}
+	
+	@Override
+	public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic)
+	{
+		super.onCharacteristicChanged(gatt, characteristic);
+		if (this.notifyListeners.containsKey(characteristic.getUuid()))
+		{
+			this.notifyListeners.get(characteristic.getUuid()).onNotify(characteristic.getValue());
+		}
+	}
+	
+	private void onSuccess(Object data)
+	{
+		if (this.currentCallback != null)
+		{
+			ActionCallback callback = this.currentCallback;
+			this.currentCallback = null;
+			callback.onSuccess(data);
+		}
+	}
+	
+	private void onFail(int errorCode, String msg)
+	{
+		if (this.currentCallback != null)
+		{
+			ActionCallback callback = this.currentCallback;
+			this.currentCallback = null;
+			callback.onFail(errorCode, msg);
+		}
+	}
+	
 }

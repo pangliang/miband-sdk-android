@@ -13,11 +13,16 @@
 [MiBandTest](https://github.com/pangliang/MiBandTest)
 
 ## 如何使用, 及已实现功能
+
+### 实例化
+```java
+miband = new MiBand(context);
+```
+
 ### 连接
 会自动搜索android设备附近的手环, 自动连接, 因为手上只有一个手环, 当前只支持搜索到一个手环的情况;
 
 ```java
-miband = new MiBand(context);
 miband.connect(new ActionCallback() {
 						
 	@Override
@@ -33,10 +38,14 @@ miband.connect(new ActionCallback() {
 	}
 });
 ```
+### 设置UserInfo
+
+重要, 连接完之后一定要设置UserInfo, 不然只能使用读取设备信息(RSSI, 电池)
+
+
 
 ### 配对, 貌似没啥用, 不配对也可以做其他的操作
 ```java
-miband = new MiBand(context);
 miband.pair(new ActionCallback() {
 	@Override
 	public void onSuccess(Object data)
@@ -51,9 +60,9 @@ miband.pair(new ActionCallback() {
 	}
 });
 ```
+
 ### 读取和连接设备的信号强度Rssi值
 ```java
-miband = new MiBand(context);
 miband.readRssi(new ActionCallback() {
 		
 	@Override
@@ -71,7 +80,6 @@ miband.readRssi(new ActionCallback() {
 ```
 ### 读取手环电池信息
 ```java
-miband = new MiBand(context);
 miband.getBatteryInfo(new ActionCallback() {
 		
 	@Override

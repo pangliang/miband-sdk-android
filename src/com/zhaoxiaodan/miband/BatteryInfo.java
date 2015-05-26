@@ -1,67 +1,52 @@
 package com.zhaoxiaodan.miband;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * 手环电池相关信息类
+ */
 public class BatteryInfo
 {
-	
-	enum Status
+	/**
+	 * 电池当前所在的状态
+	 */
+	static enum Status
 	{
-		/**
-		 * 未知状态
-		 */
-		unknow,
+		UNKNOWN, LOW, FULL, CHARGING, NOT_CHARGING;
 		
-		/**
-		 * 低电量
-		 */
-		low,
-		
-		/**
-		 * 充电中
-		 */
-		charging,
-		
-		/**
-		 * 满电, 且充电中
-		 */
-		fullAndCharging,
-		
-		/**
-		 * 未在充电
-		 */
-		notChargin,
+		public static Status fromByte(byte b)
+		{
+			switch (b)
+			{
+			case 1:
+				return LOW;
+			case 2:
+				return CHARGING;
+			case 3:
+				return FULL;
+			case 4:
+				return NOT_CHARGING;
+				
+			default:
+				return UNKNOWN;
+			}
+		}
 	}
 	
-	/**
-	 * 电池电量百分比, level=40 表示有40%的电量
-	 */
-	private int		level;
-	
-	/**
-	 * 充电循环次数
-	 */
-	private int		cycles;
-	
-	/**
-	 * 当前状态
-	 */
-	private Status	status;
-	
-	/**
-	 * 最后充电时间
-	 */
-	private Date	lastChargedDate;
+	private int			level;
+	private int			cycles;
+	private Status		status;
+	private Calendar	lastChargedDate;
 	
 	private BatteryInfo()
 	{
 		
 	}
 	
-	public static BatteryInfo fromByteData(byte[] data)
+	protected static BatteryInfo fromByteData(byte[] data)
 	{
 		if (data.length < 10)
 		{
@@ -70,16 +55,17 @@ public class BatteryInfo
 		BatteryInfo info = new BatteryInfo();
 		
 		info.level = data[0];
-		info.status = data[9] <= 4 ? Status.values()[data[9]] : Status.unknow;
+		info.status = Status.fromByte(data[9]);
 		info.cycles = 0xffff & (0xff & data[7] | (0xff & data[8]) << 8);
-		try
-		{
-			info.lastChargedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.CHINA).parse(String.format(
-					"%4d-%2d-%2d %2d:%2d:%2d", data[1] + 2000, data[2], data[3], data[4], data[5], data[6]));
-		} catch (ParseException e)
-		{
-			e.printStackTrace();
-		}
+		info.lastChargedDate = Calendar.getInstance();
+		
+		info.lastChargedDate.set(Calendar.YEAR, data[1] + 2000);
+		info.lastChargedDate.set(Calendar.MONTH, data[2]);
+		info.lastChargedDate.set(Calendar.DATE, data[3]);
+		
+		info.lastChargedDate.set(Calendar.HOUR_OF_DAY, data[4]);
+		info.lastChargedDate.set(Calendar.MINUTE, data[5]);
+		info.lastChargedDate.set(Calendar.SECOND, data[6]);
 		
 		return info;
 	}
@@ -92,23 +78,38 @@ public class BatteryInfo
 				+ ",last:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.CHINA).format(this.getLastChargedDate());
 	}
 	
+	/**
+	 * 电池电量百分比, level=40 表示有40%的电量
+	 */
 	public int getLevel()
 	{
 		return level;
 	}
 	
+	/**
+	 * 充电循环次数
+	 */
 	public int getCycles()
 	{
 		return cycles;
 	}
 	
+	/**
+	 * 当前状态
+	 * 
+	 * @see Status
+	 */
 	public Status getStatus()
 	{
 		return status;
 	}
 	
-	public Date getLastChargedDate()
+	/**
+	 * 最后充电时间
+	 */
+	public Calendar getLastChargedDate()
 	{
 		return lastChargedDate;
 	}
+	
 }
