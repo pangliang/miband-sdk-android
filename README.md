@@ -156,3 +156,7 @@ miband.setLedColor(LedColor.GREEN);
 ```
 
 
+## 参考文献
+
+- [xiaomi-mi-band-ble-protocol-reverse](http://allmydroids.blogspot.de/2014/12/xiaomi-mi-band-ble-protocol-reverse.html)
+- [xiaomi-miband-android](https://github.com/UgoRaffaele/xiaomi-miband-android)
