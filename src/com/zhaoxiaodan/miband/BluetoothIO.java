@@ -3,6 +3,8 @@ package com.zhaoxiaodan.miband;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.zhaoxiaodan.miband.model.Profile;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothAdapter.LeScanCallback;
 import android.bluetooth.BluetoothDevice;

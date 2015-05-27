@@ -8,7 +8,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.zhaoxiaodan.miband.model.BatteryInfo;
+import com.zhaoxiaodan.miband.model.LedColor;
+import com.zhaoxiaodan.miband.model.Profile;
+import com.zhaoxiaodan.miband.model.Protocol;
 import com.zhaoxiaodan.miband.model.UserInfo;
+import com.zhaoxiaodan.miband.model.VibrationMode;
 
 public class MiBand
 {
@@ -118,11 +122,29 @@ public class MiBand
 	/**
 	 * 让手环震动
 	 */
-	public void startVibration()
+	public void startVibration(VibrationMode mode)
 	{
-		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.VIBRATION, null);
+		byte[] protocal;
+		switch (mode)
+		{
+		case VIBRATION_WITH_LED:
+			protocal = Protocol.VIBRATION_WITH_LED;
+			break;
+		case VIBRATION_UNTIL_CALL_STOP:
+			protocal = Protocol.VIBRATION_UNTIL_CALL_STOP;
+			break;
+		case VIBRATION_WITHOUT_LED:
+			protocal = Protocol.VIBRATION_WITHOUT_LED;
+			break;
+		default:
+			return;
+		}
+		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
 	}
 	
+	/**
+	 * 停止以模式Protocol.VIBRATION_UNTIL_CALL_STOP 开始的震动
+	 */
 	public void stopVibration()
 	{
 		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.STOP_VIBRATION, null);
@@ -173,11 +195,29 @@ public class MiBand
 	}
 	
 	/**
-	 * 设置led灯颜色为蓝色
+	 * 设置led灯颜色
 	 */
-	public void setColorBlue()
+	public void setLedColor(LedColor color)
 	{
-		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.SET_COLOR_BLUE, null);
+		byte[] protocal;
+		switch (color)
+		{
+		case RED:
+			protocal = Protocol.SET_COLOR_RED;
+			break;
+		case BLUE:
+			protocal = Protocol.SET_COLOR_BLUE;
+			break;
+		case GREEN:
+			protocal = Protocol.SET_COLOR_GREEN;
+			break;
+		case ORANGE:
+			protocal = Protocol.SET_COLOR_ORANGE;
+			break;
+		default:
+			return;
+		}
+		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
 	}
 	
 	/**
@@ -191,6 +231,9 @@ public class MiBand
 		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, userInfo.getBytes(device.getAddress()), null);
 	}
 	
+	/**
+	 * 自检 -- 作用未知
+	 */
 	public void selfTest()
 	{
 		this.io.writeCharacteristic(Profile.UUID_CHAR_TEST, Protocol.SELF_TEST, null);
