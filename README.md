@@ -1,7 +1,9 @@
 # miband-sdk-android
 小米手环sdk
 
-## 已实现
+## Release Notes
+### 1.0.05271733 - 2015-05-27
+[Download](https://github.com/pangliang/miband-sdk-android/releases/tag/1.0.05271733)
 
 - 设置用户信息
 - 获取实时步数通知
@@ -20,6 +22,10 @@
 
 ## 参考Demo : 
 [MiBandTest](https://github.com/pangliang/MiBandTest)
+
+## 使用方法, 一下两种都可以
+- 将miband-sdk-android clone到本地之后import 进eclipse, 在自己的项目中引用
+- 直接导入jar包
 
 ## API
 
