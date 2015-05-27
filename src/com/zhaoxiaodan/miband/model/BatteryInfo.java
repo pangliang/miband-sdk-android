@@ -1,4 +1,4 @@
-package com.zhaoxiaodan.miband;
+package com.zhaoxiaodan.miband.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,7 +46,7 @@ public class BatteryInfo
 		
 	}
 	
-	protected static BatteryInfo fromByteData(byte[] data)
+	public static BatteryInfo fromByteData(byte[] data)
 	{
 		if (data.length < 10)
 		{
@@ -75,7 +75,7 @@ public class BatteryInfo
 		return "cycles:" + this.getCycles()
 				+ ",level:" + this.getLevel()
 				+ ",status:" + this.getStatus()
-				+ ",last:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.CHINA).format(this.getLastChargedDate());
+				+ ",last:" + new SimpleDateFormat("yyyy-MM-dd HH:mm:SS", Locale.CHINA).format(this.getLastChargedDate().getTime());
 	}
 	
 	/**

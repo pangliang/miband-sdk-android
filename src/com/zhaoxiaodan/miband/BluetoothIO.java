@@ -45,6 +45,11 @@ class BluetoothIO extends BluetoothGattCallback
 		});
 	}
 	
+	public BluetoothDevice getDevice()
+	{
+		return gatt.getDevice();
+	}
+	
 	public void writeAndRead(final UUID uuid, byte[] valueToWrite, final ActionCallback callback)
 	{
 		ActionCallback readCallback = new ActionCallback() {

@@ -2,9 +2,13 @@ package com.zhaoxiaodan.miband;
 
 import java.util.Arrays;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.util.Log;
+
+import com.zhaoxiaodan.miband.model.BatteryInfo;
+import com.zhaoxiaodan.miband.model.UserInfo;
 
 public class MiBand
 {
@@ -62,6 +66,11 @@ public class MiBand
 		this.io.writeAndRead(Profile.UUID_CHAR_PAIR, Protocol.PAIR, ioCallback);
 	}
 	
+	public BluetoothDevice getDevice()
+	{
+		return this.io.getDevice();
+	}
+	
 	/**
 	 * 读取和连接设备的信号强度RSSI值
 	 * 
@@ -106,6 +115,9 @@ public class MiBand
 		this.io.readCharacteristic(Profile.UUID_CHAR_BATTERY, ioCallback);
 	}
 	
+	/**
+	 * 让手环震动
+	 */
 	public void startVibration()
 	{
 		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.VIBRATION, null);
@@ -121,6 +133,12 @@ public class MiBand
 		this.io.setNotifyListener(Profile.UUID_CHAR_NOTIFICATION, listener);
 	}
 	
+	/**
+	 * 实时步数通知监听器, 设置完之后需要另外使用 {@link MiBand#enableRealtimeStepsNotify} 开启 和
+	 * {@link MiBand##disableRealtimeStepsNotify} 关闭通知
+	 * 
+	 * @param listener
+	 */
 	public void setRealtimeStepsNotifyListener(final RealtimeStepsNotifyListener listener)
 	{
 		this.io.setNotifyListener(Profile.UUID_CHAR_REALTIME_STEPS, new NotifyListener() {
@@ -138,19 +156,44 @@ public class MiBand
 		});
 	}
 	
+	/**
+	 * 开启实时步数通知
+	 */
 	public void enableRealtimeStepsNotify()
 	{
 		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.ENABLE_REALTIME_STEPS_NOTIFY, null);
 	}
 	
+	/**
+	 * 关闭实时步数通知
+	 */
+	public void disableRealtimeStepsNotify()
+	{
+		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.DISABLE_REALTIME_STEPS_NOTIFY, null);
+	}
+	
+	/**
+	 * 设置led灯颜色为蓝色
+	 */
 	public void setColorBlue()
 	{
 		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.SET_COLOR_BLUE, null);
 	}
 	
-	public void setUserInfo(byte[] data)
+	/**
+	 * 设置用户信息
+	 * 
+	 * @param userInfo
+	 */
+	public void setUserInfo(UserInfo userInfo)
 	{
-		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, data, null);
+		BluetoothDevice device = this.io.getDevice();
+		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, userInfo.getBytes(device.getAddress()), null);
+	}
+	
+	public void selfTest()
+	{
+		this.io.writeCharacteristic(Profile.UUID_CHAR_TEST, Protocol.SELF_TEST, null);
 	}
 	
 }
