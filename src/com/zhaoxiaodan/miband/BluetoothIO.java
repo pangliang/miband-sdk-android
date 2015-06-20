@@ -49,6 +49,11 @@ class BluetoothIO extends BluetoothGattCallback
 	
 	public BluetoothDevice getDevice()
 	{
+		if(null == gatt)
+		{
+			Log.e(TAG,"connect to miband first");
+			return null;
+		}
 		return gatt.getDevice();
 	}
 	
@@ -75,6 +80,11 @@ class BluetoothIO extends BluetoothGattCallback
 	{
 		try
 		{
+			if(null == gatt)
+			{
+				Log.e(TAG,"connect to miband first");
+				throw new Exception("connect to miband first");
+			}
 			this.currentCallback = callback;
 			BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(uuid);
 			if (null == chara)
@@ -98,6 +108,11 @@ class BluetoothIO extends BluetoothGattCallback
 	{
 		try
 		{
+			if(null == gatt)
+			{
+				Log.e(TAG,"connect to miband first");
+				throw new Exception("connect to miband first");
+			}
 			this.currentCallback = callback;
 			BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(uuid);
 			if (null == chara)
@@ -120,6 +135,11 @@ class BluetoothIO extends BluetoothGattCallback
 	{
 		try
 		{
+			if(null == gatt)
+			{
+				Log.e(TAG,"connect to miband first");
+				throw new Exception("connect to miband first");
+			}
 			this.currentCallback = callback;
 			this.gatt.readRemoteRssi();
 		} catch (Throwable tr)
@@ -132,6 +152,11 @@ class BluetoothIO extends BluetoothGattCallback
 	
 	public void setNotifyListener(UUID characteristicId, NotifyListener listener)
 	{
+		if(null == gatt)
+		{
+			Log.e(TAG,"connect to miband first");
+			return;
+		}
 		if(this.notifyListeners.containsKey(characteristicId))
 			return;
 		
