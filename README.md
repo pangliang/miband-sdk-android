@@ -2,6 +2,11 @@
 小米手环sdk
 
 ## Release Notes
+
+### 1.0.07171543 - 2015-08-17
+
+- 获取动力感应器数据
+
 ### 1.0.05271733 - 2015-05-27
 [Download](https://github.com/pangliang/miband-sdk-android/releases/tag/1.0.05271733)
 
