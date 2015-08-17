@@ -25,12 +25,12 @@
 - 收集通知类型
 
 
-## 参考Demo : 
-[MiBandTest](https://github.com/pangliang/MiBandTest)
-
 ## 使用方法, 一下两种都可以
 - 将miband-sdk-android clone到本地之后import 进eclipse, 在自己的项目中引用
 - 直接导入jar包
+
+## !!!!!!!注意!!!!!!!!
+连接完之后一定要设置UserInfo, 不然只能使用读取设备信息(RSSI, 电池)
 
 ## API
 
