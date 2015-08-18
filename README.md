@@ -157,6 +157,25 @@ miband.setLedColor(LedColor.BLUE);
 miband.setLedColor(LedColor.RED);
 miband.setLedColor(LedColor.GREEN);
 
+// 获取重力感应器原始数据, 需要两步
+// 1. 设置监听器
+miband.setSensorDataNotifyListener(new NotifyListener()
+{
+	@Override
+	public void onNotify(byte[] data)
+	{
+		int i = 0;
+
+		int index = (data[i++] & 0xFF) | (data[i++] & 0xFF) << 8;  // 序号
+		int d1 = (data[i++] & 0xFF) | (data[i++] & 0xFF) << 8;    
+		int d2 = (data[i++] & 0xFF) | (data[i++] & 0xFF) << 8;
+		int d3 = (data[i++] & 0xFF) | (data[i++] & 0xFF) << 8;
+
+	}
+});
+
+// 2. 开启
+miband.enableSensorDataNotify();
 
 ```
 
