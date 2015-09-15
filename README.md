@@ -29,6 +29,7 @@
 
 ## !!!!!!!注意!!!!!!!!
 连接完之后一定要设置UserInfo, 不然只能使用读取设备信息(RSSI, 电池)
+并且配对时, 在手环闪动的时候, 需要拍一下手环; 就像官方app 配对时一样
 
 ## API
 
@@ -56,6 +57,7 @@ miband.connect(new ActionCallback() {
 
 // 设置UserInfo
 // 重要, 连接完之后一定要设置UserInfo, 不然只能使用读取设备信息(RSSI, 电池)
+// 并且在手环闪动的时候, 需要拍一下手环; 就像官方app 配对时一样
 UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
 miband.setUserInfo(userInfo);
 
