@@ -1,14 +1,18 @@
 package com.zhaoxiaodan.miband;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
 import android.content.Context;
 import android.util.Log;
 
+import com.zhaoxiaodan.miband.listeners.NotifyListener;
+import com.zhaoxiaodan.miband.listeners.RealtimeStepsNotifyListener;
 import com.zhaoxiaodan.miband.model.BatteryInfo;
 import com.zhaoxiaodan.miband.model.LedColor;
 import com.zhaoxiaodan.miband.model.Profile;
@@ -29,15 +33,52 @@ public class MiBand
 		this.context = context;
 		this.io = new BluetoothIO();
 	}
+
+	public static void startScan(ScanCallback callback)
+	{
+		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		if(null == adapter)
+		{
+			Log.e(TAG,"BluetoothAdapter is null");
+			return;
+		}
+		BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
+		if(null == scanner){
+			Log.e(TAG,"BluetoothLeScanner is null");
+			return;
+		}
+		scanner.startScan(callback);
+	}
+
+	public static void stopScan(ScanCallback callback)
+	{
+		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+		if(null == adapter)
+		{
+			Log.e(TAG,"BluetoothAdapter is null");
+			return;
+		}
+		BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
+		if(null == scanner){
+			Log.e(TAG,"BluetoothLeScanner is null");
+			return;
+		}
+		scanner.stopScan(callback);
+	}
 	
 	/**
-	 * 会自动搜索android设备附近的手环, 自动连接, 因为手上只有一个手环, 当前只支持搜索到一个手环的情况;
+	 * 连接指定的手环
 	 * 
 	 * @param callback
 	 */
-	public void connect(final ActionCallback callback)
+	public void connect(BluetoothDevice device, final ActionCallback callback)
 	{
-		this.io.connect(context, callback);
+		this.io.connect(context, device, callback);
+	}
+
+	public void setDisconnectedListener(NotifyListener disconnectedListener)
+	{
+		this.io.setDisconnectedListener(disconnectedListener);
 	}
 	
 	/**
@@ -132,8 +173,8 @@ public class MiBand
 		case VIBRATION_WITH_LED:
 			protocal = Protocol.VIBRATION_WITH_LED;
 			break;
-		case VIBRATION_UNTIL_CALL_STOP:
-			protocal = Protocol.VIBRATION_UNTIL_CALL_STOP;
+		case VIBRATION_10_TIMES_WITH_LED:
+			protocal = Protocol.VIBRATION_10_TIMES_WITH_LED;
 			break;
 		case VIBRATION_WITHOUT_LED:
 			protocal = Protocol.VIBRATION_WITHOUT_LED;
@@ -141,15 +182,15 @@ public class MiBand
 		default:
 			return;
 		}
-		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, protocal, null);
+		this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, protocal, null);
 	}
 	
 	/**
-	 * 停止以模式Protocol.VIBRATION_UNTIL_CALL_STOP 开始的震动
+	 * 停止以模式Protocol.VIBRATION_10_TIMES_WITH_LED 开始的震动
 	 */
 	public void stopVibration()
 	{
-		this.io.writeCharacteristic(Profile.UUID_CHAR_CONTROL_POINT, Protocol.STOP_VIBRATION, null);
+		this.io.writeCharacteristic(Profile.UUID_SERVICE_VIBRATION, Profile.UUID_CHAR_VIBRATION, Protocol.STOP_VIBRATION, null);
 	}
 	
 	public void setNormalNotifyListener(NotifyListener listener)
@@ -202,7 +243,8 @@ public class MiBand
 	 */
 	public void setRealtimeStepsNotifyListener(final RealtimeStepsNotifyListener listener)
 	{
-		this.io.setNotifyListener(Profile.UUID_CHAR_REALTIME_STEPS, new NotifyListener() {
+		this.io.setNotifyListener(Profile.UUID_CHAR_REALTIME_STEPS, new NotifyListener()
+		{
 
 			@Override
 			public void onNotify(byte[] data)
@@ -269,13 +311,18 @@ public class MiBand
 		BluetoothDevice device = this.io.getDevice();
 		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, userInfo.getBytes(device.getAddress()), null);
 	}
-	
-	/**
-	 * 自检 -- 作用未知
-	 */
-	public void selfTest()
+
+	public void showServicesAndCharacteristics()
 	{
-		this.io.writeCharacteristic(Profile.UUID_CHAR_TEST, Protocol.SELF_TEST, null);
+		for(BluetoothGattService service : this.io.gatt.getServices())
+		{
+			Log.d(TAG, "onServicesDiscovered:" + service.getUuid());
+
+			for(BluetoothGattCharacteristic characteristic:service.getCharacteristics())
+			{
+				Log.d(TAG, "characteristic:" + characteristic.getUuid());
+			}
+		}
 	}
 	
 }

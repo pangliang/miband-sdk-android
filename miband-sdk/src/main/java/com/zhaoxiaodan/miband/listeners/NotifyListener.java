@@ -1,4 +1,4 @@
-package com.zhaoxiaodan.miband;
+package com.zhaoxiaodan.miband.listeners;
 
 public interface NotifyListener
 {

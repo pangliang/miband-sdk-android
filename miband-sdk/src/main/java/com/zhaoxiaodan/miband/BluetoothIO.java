@@ -3,16 +3,21 @@ package com.zhaoxiaodan.miband;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.zhaoxiaodan.miband.listeners.NotifyListener;
 import com.zhaoxiaodan.miband.model.Profile;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothAdapter.LeScanCallback;
+import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
 import android.content.Context;
 import android.util.Log;
 
@@ -23,28 +28,17 @@ class BluetoothIO extends BluetoothGattCallback
 	ActionCallback					currentCallback;
 	
 	HashMap<UUID, NotifyListener>	notifyListeners	= new HashMap<UUID, NotifyListener>();
-	
-	public void connect(final Context context, final ActionCallback callback)
+	NotifyListener disconnectedListener = null;
+
+	public void connect(final Context context, BluetoothDevice device, final ActionCallback callback)
 	{
-		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-		adapter.startLeScan(new LeScanCallback() {
-			@Override
-			public void onLeScan(final BluetoothDevice device, final int rssi,
-					final byte[] scanRecord)
-			{
-				Log.d(TAG,
-						"onLeScan: name:" + device.getName() + ",uuid:"
-								+ device.getUuids() + ",add:"
-								+ device.getAddress() + ",type:"
-								+ device.getType() + ",bondState:"
-								+ device.getBondState() + ",rssi:" + rssi);
-				
-				BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-				adapter.stopLeScan(this);
-				BluetoothIO.this.currentCallback = callback;
-				device.connectGatt(context, false, BluetoothIO.this);
-			}
-		});
+		BluetoothIO.this.currentCallback = callback;
+		device.connectGatt(context, false, BluetoothIO.this);
+	}
+
+	public void setDisconnectedListener(NotifyListener disconnectedListener)
+	{
+		this.disconnectedListener = disconnectedListener;
 	}
 	
 	public BluetoothDevice getDevice()
@@ -75,8 +69,13 @@ class BluetoothIO extends BluetoothGattCallback
 		};
 		this.writeCharacteristic(uuid, valueToWrite, readCallback);
 	}
+
+	public void writeCharacteristic(UUID characteristicUUID, byte[] value, ActionCallback callback)
+	{
+		writeCharacteristic(Profile.UUID_SERVICE_MILI, characteristicUUID, value, callback);
+	}
 	
-	public void writeCharacteristic(UUID uuid, byte[] value, ActionCallback callback)
+	public void writeCharacteristic(UUID serviceUUID, UUID characteristicUUID, byte[] value, ActionCallback callback)
 	{
 		try
 		{
@@ -86,10 +85,10 @@ class BluetoothIO extends BluetoothGattCallback
 				throw new Exception("connect to miband first");
 			}
 			this.currentCallback = callback;
-			BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(uuid);
+			BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(characteristicUUID);
 			if (null == chara)
 			{
-				this.onFail(-1, "BluetoothGattCharacteristic " + uuid + " is not exsit");
+				this.onFail(-1, "BluetoothGattCharacteristic " + characteristicUUID + " is not exsit");
 				return;
 			}
 			chara.setValue(value);
@@ -180,7 +179,9 @@ class BluetoothIO extends BluetoothGattCallback
 		{
 			gatt.discoverServices();
 		}else if(newState == BluetoothProfile.STATE_DISCONNECTED){
-//			gatt.close();
+			gatt.close();
+			if(this.disconnectedListener != null)
+				this.disconnectedListener.onNotify(null);
 		}
 	}
 	

@@ -9,13 +9,13 @@ public class Profile
 	 * 主要的service
 	 */
 	public static final UUID	UUID_SERVICE_MILI					= UUID.fromString("0000fee0-0000-1000-8000-00805f9b34fb");
-	
+
 	/**
 	 * 未知作用
 	 */
 	public static final UUID	UUID_SERVICE_UNKNOWN1				= UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
 	public static final UUID	UUID_SERVICE_UNKNOWN2				= UUID.fromString("00001801-0000-1000-8000-00805f9b34fb");
-	public static final UUID	UUID_SERVICE_UNKNOWN3				= UUID.fromString("00001802-0000-1000-8000-00805f9b34fb");
+	public static final UUID	UUID_SERVICE_VIBRATION				= UUID.fromString("00001802-0000-1000-8000-00805f9b34fb");
 	public static final UUID	UUID_SERVICE_UNKNOWN4				= UUID.fromString("0000fee1-0000-1000-8000-00805f9b34fb");
 	public static final UUID	UUID_SERVICE_UNKNOWN5				= UUID.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
 	// ========================== 服务部分 end ============================
@@ -74,6 +74,8 @@ public class Profile
 	 * 配对,读写
 	 */
 	public static final UUID	UUID_CHAR_PAIR						= UUID.fromString("0000ff0f-0000-1000-8000-00805f9b34fb");
+
+	public static final UUID    UUID_CHAR_VIBRATION                       = UUID.fromString("00002a06-0000-1000-8000-00805f9b34fb");
 	
 	// ========================== 特性部分 end ============================
 }

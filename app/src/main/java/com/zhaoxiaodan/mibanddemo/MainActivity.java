@@ -5,8 +5,9 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,12 +19,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.zhaoxiaodan.miband.ActionCallback;
 import com.zhaoxiaodan.miband.MiBand;
-import com.zhaoxiaodan.miband.NotifyListener;
-import com.zhaoxiaodan.miband.RealtimeStepsNotifyListener;
+import com.zhaoxiaodan.miband.listeners.NotifyListener;
+import com.zhaoxiaodan.miband.listeners.RealtimeStepsNotifyListener;
 import com.zhaoxiaodan.miband.model.BatteryInfo;
 import com.zhaoxiaodan.miband.model.LedColor;
 import com.zhaoxiaodan.miband.model.UserInfo;
@@ -52,13 +52,14 @@ public class MainActivity extends Activity
 	
 	static final String[]		BUTTONS	= new String[] {
 			"Connect",
+			"showServicesAndCharacteristics",
 			"setUserInfo",
 			"pair",
 			"read_rssi",
 			"battery_info",
 			"miband.startVibration(VibrationMode.VIBRATION_WITH_LED);",
 			"miband.startVibration(VibrationMode.VIBRATION_WITHOUT_LED);",
-			"miband.startVibration(VibrationMode.VIBRATION_UNTIL_CALL_STOP);",
+			"miband.startVibration(VibrationMode.VIBRATION_10_TIMES_WITH_LED);",
 			"stopVibration",
 			"setNormalNotifyListener",
 			"setRealtimeStepsNotifyListener",
@@ -68,11 +69,10 @@ public class MainActivity extends Activity
 			"miband.setLedColor(LedColor.BLUE);",
 			"miband.setLedColor(LedColor.RED);",
 			"miband.setLedColor(LedColor.GREEN);",
-			"selfTest",
-			"setSensorDataNotifyListener",
-			"enableSensorDataNotify",
-			"disableSensorDataNotify",
-										};
+//			"setSensorDataNotifyListener",
+//			"enableSensorDataNotify",
+//			"disableSensorDataNotify",
+	};
 
 
 	
@@ -85,6 +85,10 @@ public class MainActivity extends Activity
 
 		this.logView = (TextView)findViewById(R.id.textView);
 
+		Intent intent=this.getIntent();
+		final BluetoothDevice device = intent.getParcelableExtra("device");
+
+
 		miband = new MiBand(this);
 		ListView lv = (ListView)findViewById(R.id.listView);
 		lv.setAdapter(new ArrayAdapter<String>(this, R.layout.item, BUTTONS));
@@ -95,14 +99,25 @@ public class MainActivity extends Activity
 				if (position == menuIndex++)
 				{
 					final ProgressDialog pd = ProgressDialog.show(MainActivity.this, "", "努力运行中, 请稍后......");
-					miband.connect(new ActionCallback() {
+					miband.connect(device, new ActionCallback()
+					{
 						
 						@Override
 						public void onSuccess(Object data)
 						{
 							pd.dismiss();
 							Log.d(TAG,
-									"连接成功");
+									"连接成功!!!");
+
+							miband.setDisconnectedListener(new NotifyListener()
+							{
+								@Override
+								public void onNotify(byte[] data)
+								{
+									Log.d(TAG,
+											"连接断开!!!");
+								}
+							});
 						}
 						
 						@Override
@@ -115,13 +130,18 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
+					miband.showServicesAndCharacteristics();
+				}
+				else if (position == menuIndex++)
+				{
 					UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 0);
 					Log.d(TAG, "setUserInfo:" + userInfo.toString() + ",data:" + Arrays.toString(userInfo.getBytes(miband.getDevice().getAddress())));
 					miband.setUserInfo(userInfo);
 				}
 				else if (position == menuIndex++)
 				{
-					miband.pair(new ActionCallback() {
+					miband.pair(new ActionCallback()
+					{
 						
 						@Override
 						public void onSuccess(Object data)
@@ -138,7 +158,8 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
-					miband.readRssi(new ActionCallback() {
+					miband.readRssi(new ActionCallback()
+					{
 						
 						@Override
 						public void onSuccess(Object data)
@@ -155,7 +176,8 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
-					miband.getBatteryInfo(new ActionCallback() {
+					miband.getBatteryInfo(new ActionCallback()
+					{
 						
 						@Override
 						public void onSuccess(Object data)
@@ -181,7 +203,7 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
-					miband.startVibration(VibrationMode.VIBRATION_UNTIL_CALL_STOP);
+					miband.startVibration(VibrationMode.VIBRATION_10_TIMES_WITH_LED);
 				}
 				else if (position == menuIndex++)
 				{
@@ -189,7 +211,8 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
-					miband.setNormalNotifyListener(new NotifyListener() {
+					miband.setNormalNotifyListener(new NotifyListener()
+					{
 						
 						@Override
 						public void onNotify(byte[] data)
@@ -200,7 +223,8 @@ public class MainActivity extends Activity
 				}
 				else if (position == menuIndex++)
 				{
-					miband.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener() {
+					miband.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener()
+					{
 						
 						@Override
 						public void onNotify(int steps)
@@ -234,9 +258,6 @@ public class MainActivity extends Activity
 					miband.setLedColor(LedColor.GREEN);
 				}
 				else if (position == menuIndex++)
-				{
-					miband.selfTest();
-				} else if (position == menuIndex++)
 				{
 					miband.setSensorDataNotifyListener(new NotifyListener()
 					{
