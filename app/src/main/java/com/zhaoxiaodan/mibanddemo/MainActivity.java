@@ -53,8 +53,6 @@ public class MainActivity extends Activity
 	static final String[]		BUTTONS	= new String[] {
 			"Connect",
 			"showServicesAndCharacteristics",
-			"setUserInfo",
-			"pair",
 			"read_rssi",
 			"battery_info",
 			"miband.startVibration(VibrationMode.VIBRATION_WITH_LED);",
@@ -69,9 +67,11 @@ public class MainActivity extends Activity
 			"miband.setLedColor(LedColor.BLUE);",
 			"miband.setLedColor(LedColor.RED);",
 			"miband.setLedColor(LedColor.GREEN);",
-//			"setSensorDataNotifyListener",
-//			"enableSensorDataNotify",
-//			"disableSensorDataNotify",
+			"setSensorDataNotifyListener",
+			"enableSensorDataNotify",
+			"disableSensorDataNotify",
+			"setUserInfo",
+			"pair",
 	};
 
 
@@ -131,30 +131,6 @@ public class MainActivity extends Activity
 				else if (position == menuIndex++)
 				{
 					miband.showServicesAndCharacteristics();
-				}
-				else if (position == menuIndex++)
-				{
-					UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 0);
-					Log.d(TAG, "setUserInfo:" + userInfo.toString() + ",data:" + Arrays.toString(userInfo.getBytes(miband.getDevice().getAddress())));
-					miband.setUserInfo(userInfo);
-				}
-				else if (position == menuIndex++)
-				{
-					miband.pair(new ActionCallback()
-					{
-						
-						@Override
-						public void onSuccess(Object data)
-						{
-							Log.d(TAG, "pair succ");
-						}
-						
-						@Override
-						public void onFail(int errorCode, String msg)
-						{
-							Log.d(TAG, "pair fail");
-						}
-					});
 				}
 				else if (position == menuIndex++)
 				{
@@ -287,6 +263,30 @@ public class MainActivity extends Activity
 				else if (position == menuIndex++)
 				{
 					miband.disableSensorDataNotify();
+				}
+				else if (position == menuIndex++)
+				{
+					UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 0);
+					Log.d(TAG, "setUserInfo:" + userInfo.toString() + ",data:" + Arrays.toString(userInfo.getBytes(miband.getDevice().getAddress())));
+					miband.setUserInfo(userInfo);
+				}
+				else if (position == menuIndex++)
+				{
+					miband.pair(new ActionCallback()
+					{
+
+						@Override
+						public void onSuccess(Object data)
+						{
+							Log.d(TAG, "pair succ");
+						}
+
+						@Override
+						public void onFail(int errorCode, String msg)
+						{
+							Log.d(TAG, "pair fail");
+						}
+					});
 				}
 			}
 		});

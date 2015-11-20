@@ -1,7 +1,6 @@
 # miband-sdk-android
 
 [![Join the chat at https://gitter.im/pangliang/miband-sdk-android](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pangliang/miband-sdk-android?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-小米手环sdk
 
 ## TODO
 - 获取心跳数据
@@ -15,10 +14,10 @@
 ### 1.0.11201903 - 2015-11-20
 
 
->> ios版本: 1.3.57
->> android: 1.7.521
->> 固件版本: 4.16.11.7
->> 心率版本: 1.3.73.16
+ios版本: 1.3.57 
+android: 1.7.521 
+固件版本: 4.16.11.7 
+心率版本: 1.3.73.16 
 
 
 - 扫描附近的Le设备, 附近存在多个手环时可以选择连接
