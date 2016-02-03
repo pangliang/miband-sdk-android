@@ -3,22 +3,35 @@
 [![Join the chat at https://gitter.im/pangliang/miband-sdk-android](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pangliang/miband-sdk-android?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## TODO
-- 获取心跳数据
+- 重构BluetoothIO为同步方式
 - 重力感应原始数据获取
 - 获取及设置睡眠信息
 - 按时段获取及设置运动信息
 - 收集通知类型
 
+## 当前测试通过固件版本
+
+小米运动app:
+
+- ios版本: 1.3.57
+- android: 1.8.711
+
+普通版:(MI)
+
+- 固件版本: 4.16.11.7
+
+心率版(MI1S)
+
+- 固件版本: 4.15.12.10
+- 心率版本: 1.3.74.64
+
 ## Release Notes
 
+### 1.0.02031506 - 2016-02-03
+
+- 支持获取心跳扫描数据
+
 ### 1.0.11201903 - 2015-11-20
-
-
-ios版本: 1.3.57 
-android: 1.7.521 
-固件版本: 4.16.11.7 
-心率版本: 1.3.73.16 
-
 
 - 扫描附近的Le设备, 附近存在多个手环时可以选择连接
 - 添加设备断开监听器
@@ -95,25 +108,18 @@ miband.setDisconnectedListener(new NotifyListener()
 	}
 });
 
-// 设置UserInfo, 貌似没啥用, 不配对也可以做其他的操作
-// 并且在手环闪动的时候, 需要拍一下手环; 就像官方app 配对时一样
-UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
-miband.setUserInfo(userInfo);
-
-// 配对, 貌似没啥用, 不配对也可以做其他的操作
-miband.pair(new ActionCallback() {
+// 设置心跳扫描结果通知
+miband.setHeartRateScanListener(new HeartRateNotifyListener()
+{
 	@Override
-	public void onSuccess(Object data)
+	public void onNotify(int heartRate)
 	{
-		changeStatus("pair succ");
-	}
-	
-	@Override
-	public void onFail(int errorCode, String msg)
-	{
-		changeStatus("pair fail");
+		Log.d(TAG, "heart rate: "+ heartRate);
 	}
 });
+
+//开始心跳扫描
+miband.startHeartRateScan();
 
 // 读取和连接设备的信号强度Rssi值
 miband.readRssi(new ActionCallback() {
@@ -215,6 +221,26 @@ miband.setSensorDataNotifyListener(new NotifyListener()
 
 // 2. 开启
 miband.enableSensorDataNotify();
+
+// 设置UserInfo, 貌似没啥用, 不配对也可以做其他的操作
+// 并且在手环闪动的时候, 需要拍一下手环; 就像官方app 配对时一样
+UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
+miband.setUserInfo(userInfo);
+
+// 配对, 貌似没啥用, 不配对也可以做其他的操作
+miband.pair(new ActionCallback() {
+	@Override
+	public void onSuccess(Object data)
+	{
+		changeStatus("pair succ");
+	}
+	
+	@Override
+	public void onFail(int errorCode, String msg)
+	{
+		changeStatus("pair fail");
+	}
+});
 
 ```
 

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.zhaoxiaodan.miband.ActionCallback;
 import com.zhaoxiaodan.miband.MiBand;
+import com.zhaoxiaodan.miband.listeners.HeartRateNotifyListener;
 import com.zhaoxiaodan.miband.listeners.NotifyListener;
 import com.zhaoxiaodan.miband.listeners.RealtimeStepsNotifyListener;
 import com.zhaoxiaodan.miband.model.BatteryInfo;
@@ -55,6 +56,8 @@ public class MainActivity extends Activity
 			"showServicesAndCharacteristics",
 			"read_rssi",
 			"battery_info",
+			"setHeartRateNotifyListener",
+			"startHeartRateScan",
 			"miband.startVibration(VibrationMode.VIBRATION_WITH_LED);",
 			"miband.startVibration(VibrationMode.VIBRATION_WITHOUT_LED);",
 			"miband.startVibration(VibrationMode.VIBRATION_10_TIMES_WITH_LED);",
@@ -154,20 +157,36 @@ public class MainActivity extends Activity
 				{
 					miband.getBatteryInfo(new ActionCallback()
 					{
-						
+
 						@Override
 						public void onSuccess(Object data)
 						{
 							BatteryInfo info = (BatteryInfo) data;
 							Log.d(TAG, info.toString());
 						}
-						
+
 						@Override
 						public void onFail(int errorCode, String msg)
 						{
 							Log.d(TAG, "getBatteryInfo fail");
 						}
 					});
+				}
+				else if (position == menuIndex++)
+				{
+
+					miband.setHeartRateScanListener(new HeartRateNotifyListener()
+					{
+						@Override
+						public void onNotify(int heartRate)
+						{
+							Log.d(TAG, "heart rate: "+ heartRate);
+						}
+					});
+				}
+				else if (position == menuIndex++)
+				{
+					miband.startHeartRateScan();
 				}
 				else if (position == menuIndex++)
 				{

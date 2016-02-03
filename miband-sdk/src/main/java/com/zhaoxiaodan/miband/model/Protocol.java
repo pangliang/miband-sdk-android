@@ -15,6 +15,7 @@ public class Protocol
 	public static final byte[]	SET_COLOR_BLUE					= { 14, 0, 6, 6, 1 };
 	public static final byte[]	SET_COLOR_ORANGE				= { 14, 6, 2, 0, 1 };
 	public static final byte[]	SET_COLOR_GREEN					= { 14, 4, 5, 0, 1 };
+	public static final byte[]	START_HEART_RATE_SCAN			= { 21, 2, 1 };
 	
 	public static final byte[]	REBOOT							= { 12 };
 	public static final byte[]	REMOTE_DISCONNECT				= { 1 };

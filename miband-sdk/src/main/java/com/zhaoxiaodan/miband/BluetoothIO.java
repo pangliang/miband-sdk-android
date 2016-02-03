@@ -149,7 +149,7 @@ class BluetoothIO extends BluetoothGattCallback
 		
 	}
 	
-	public void setNotifyListener(UUID characteristicId, NotifyListener listener)
+	public void setNotifyListener(UUID serviceUUID, UUID characteristicId, NotifyListener listener)
 	{
 		if(null == gatt)
 		{
@@ -159,9 +159,12 @@ class BluetoothIO extends BluetoothGattCallback
 		if(this.notifyListeners.containsKey(characteristicId))
 			return;
 		
-		BluetoothGattCharacteristic chara = gatt.getService(Profile.UUID_SERVICE_MILI).getCharacteristic(characteristicId);
-		if (chara == null)
+		BluetoothGattCharacteristic chara = gatt.getService(serviceUUID).getCharacteristic(characteristicId);
+		if (chara == null){
+			Log.e(TAG,"characteristicId "+characteristicId.toString() +" not found in service " + serviceUUID.toString());
 			return;
+		}
+
 		
 		this.gatt.setCharacteristicNotification(chara, true);
 		BluetoothGattDescriptor descriptor = chara.getDescriptor(Profile.UUID_DESCRIPTOR_UPDATE_NOTIFICATION);

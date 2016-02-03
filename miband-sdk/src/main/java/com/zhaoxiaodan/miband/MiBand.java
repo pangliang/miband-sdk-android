@@ -1,16 +1,19 @@
 package com.zhaoxiaodan.miband;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.content.Context;
 import android.util.Log;
 
+import com.zhaoxiaodan.miband.listeners.HeartRateNotifyListener;
 import com.zhaoxiaodan.miband.listeners.NotifyListener;
 import com.zhaoxiaodan.miband.listeners.RealtimeStepsNotifyListener;
 import com.zhaoxiaodan.miband.model.BatteryInfo;
@@ -195,7 +198,7 @@ public class MiBand
 	
 	public void setNormalNotifyListener(NotifyListener listener)
 	{
-		this.io.setNotifyListener(Profile.UUID_CHAR_NOTIFICATION, listener);
+		this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_NOTIFICATION, listener);
 	}
 	
 	/**
@@ -206,15 +209,13 @@ public class MiBand
 	 */
 	public void setSensorDataNotifyListener(final NotifyListener listener)
 	{
-		this.io.setNotifyListener(Profile.UUID_CHAR_SENSOR_DATA, new NotifyListener()
+		this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_SENSOR_DATA, new NotifyListener()
 		{
 			
 			@Override
 			public void onNotify(byte[] data)
 			{
-
 				listener.onNotify(data);
-
 			}
 		});
 	}
@@ -243,7 +244,7 @@ public class MiBand
 	 */
 	public void setRealtimeStepsNotifyListener(final RealtimeStepsNotifyListener listener)
 	{
-		this.io.setNotifyListener(Profile.UUID_CHAR_REALTIME_STEPS, new NotifyListener()
+		this.io.setNotifyListener(Profile.UUID_SERVICE_MILI, Profile.UUID_CHAR_REALTIME_STEPS, new NotifyListener()
 		{
 
 			@Override
@@ -320,9 +321,37 @@ public class MiBand
 
 			for(BluetoothGattCharacteristic characteristic:service.getCharacteristics())
 			{
-				Log.d(TAG, "characteristic:" + characteristic.getUuid());
+				Log.d(TAG, "  char:" + characteristic.getUuid());
+
+				for(BluetoothGattDescriptor descriptor:characteristic.getDescriptors())
+				{
+					Log.d(TAG, "    descriptor:" + descriptor.getUuid());
+				}
 			}
 		}
+	}
+
+	public void setHeartRateScanListener(final HeartRateNotifyListener listener)
+	{
+		this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"), new NotifyListener()
+		{
+
+			@Override
+			public void onNotify(byte[] data)
+			{
+				Log.d(TAG, Arrays.toString(data));
+				if (data.length == 2 && data[0] == 6)
+				{
+					int heartRate =  data[1] & 0xFF;
+					listener.onNotify(heartRate);
+				}
+			}
+		});
+	}
+
+	public void startHeartRateScan()
+	{
+		this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
 	}
 	
 }
