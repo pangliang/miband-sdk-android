@@ -1,5 +1,7 @@
 # miband-sdk-android
 
+##讨论室
+
 [![Join the chat at https://gitter.im/pangliang/miband-sdk-android](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pangliang/miband-sdk-android?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## TODO
@@ -243,9 +245,3 @@ miband.pair(new ActionCallback() {
 });
 
 ```
-
-
-## 参考文献
-
-- [xiaomi-mi-band-ble-protocol-reverse](http://allmydroids.blogspot.de/2014/12/xiaomi-mi-band-ble-protocol-reverse.html)
-- [xiaomi-miband-android](https://github.com/UgoRaffaele/xiaomi-miband-android)
