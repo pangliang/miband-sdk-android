@@ -29,6 +29,11 @@
 
 ## Release Notes
 
+### 1.1.02221306 - 2016-02-22
+
+- 修复setUserInfo导致的蓝牙断开问题. 当设置的`userid`跟之前设置的不一样时, 手环会闪动并震动, 这个时候需要拍一下手环, 就像官方app配对时一样;当设置的userid跟之前一样时 手环无反应;
+- 获取心跳扫描之前, 必须做setUserInfo 操作
+
 ### 1.1.02031506 - 2016-02-03
 
 - 支持获取心跳扫描数据
@@ -109,6 +114,12 @@ miband.setDisconnectedListener(new NotifyListener()
 				“连接断开!!!”);
 	}
 });
+
+// 设置UserInfo, 心跳检测之前必须设置
+// 当 设置的 userid 跟之前设置的不一样时, 手环会闪动并震动, 这个时候, 需要拍一下手环; 就像官方app 配对时一样
+// 当 设置的 userid 跟之前一样时 手环无反应;
+UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
+miband.setUserInfo(userInfo);
 
 // 设置心跳扫描结果通知
 miband.setHeartRateScanListener(new HeartRateNotifyListener()
@@ -223,11 +234,6 @@ miband.setSensorDataNotifyListener(new NotifyListener()
 
 // 2. 开启
 miband.enableSensorDataNotify();
-
-// 设置UserInfo, 貌似没啥用, 不配对也可以做其他的操作
-// 并且在手环闪动的时候, 需要拍一下手环; 就像官方app 配对时一样
-UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
-miband.setUserInfo(userInfo);
 
 // 配对, 貌似没啥用, 不配对也可以做其他的操作
 miband.pair(new ActionCallback() {
