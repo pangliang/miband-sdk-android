@@ -20,6 +20,8 @@ public class Profile
 	 */
 	public static final UUID	UUID_SERVICE_HEARTRATE				= UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb");
 
+
+
 	/**
 	 * 未知作用
 	 */
@@ -31,6 +33,8 @@ public class Profile
 	
 	// ========================== 描述部分 ============================
 	public static final UUID	UUID_DESCRIPTOR_UPDATE_NOTIFICATION	= UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+
+	public static final UUID	UUID_NOTIFICATION_HEARTRATE				= UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 	
 	// ========================== 描述部分 end ============================
 	

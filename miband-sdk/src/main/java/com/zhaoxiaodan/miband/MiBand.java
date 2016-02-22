@@ -310,7 +310,8 @@ public class MiBand
 	public void setUserInfo(UserInfo userInfo)
 	{
 		BluetoothDevice device = this.io.getDevice();
-		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, userInfo.getBytes(device.getAddress()), null);
+		byte[] data = userInfo.getBytes(device.getAddress());
+		this.io.writeCharacteristic(Profile.UUID_CHAR_USER_INFO, data, null);
 	}
 
 	public void showServicesAndCharacteristics()
@@ -333,9 +334,8 @@ public class MiBand
 
 	public void setHeartRateScanListener(final HeartRateNotifyListener listener)
 	{
-		this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"), new NotifyListener()
+		this.io.setNotifyListener(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_NOTIFICATION_HEARTRATE, new NotifyListener()
 		{
-
 			@Override
 			public void onNotify(byte[] data)
 			{
@@ -351,7 +351,8 @@ public class MiBand
 
 	public void startHeartRateScan()
 	{
-		this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
+
+		MiBand.this.io.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN, null);
 	}
 	
 }

@@ -6,13 +6,13 @@ import java.nio.ByteBuffer;
 public class UserInfo
 {
 	
-	private int		uid;
-	private byte	gender;
-	private byte	age;
-	private byte	height;		// cm
-	private byte	weight;		// kg
-	private String	alias	= "";
-	private byte	type;
+	private int uid;
+	private byte gender;
+	private byte age;
+	private byte height;        // cm
+	private byte weight;        // kg
+	private String alias = "";
+	private byte type;
 	
 	private UserInfo()
 	{
@@ -32,7 +32,7 @@ public class UserInfo
 	
 	public static UserInfo fromByteData(byte[] data)
 	{
-		if (data.length < 9)
+		if (data.length < 20)
 		{
 			return null;
 		}
@@ -43,14 +43,14 @@ public class UserInfo
 		info.age = data[5];
 		info.height = data[6];
 		info.weight = data[7];
+		info.type = data[8];
 		try
 		{
-			info.alias = data.length == 9 ? "" : new String(data, 8, data.length - 9, "UTF-8");
+			info.alias = new String(data, 9, 8, "UTF-8");
 		} catch (UnsupportedEncodingException e)
 		{
 			info.alias = "";
 		}
-		info.type = data[data.length - 1];
 		
 		return info;
 	}
@@ -75,19 +75,23 @@ public class UserInfo
 		bf.put(this.height);
 		bf.put(this.weight);
 		bf.put(this.type);
-		if(aliasBytes.length<=10)
+		bf.put((byte) 4);
+		bf.put((byte) 0);
+
+		if (aliasBytes.length <= 8)
 		{
 			bf.put(aliasBytes);
-			bf.put(new byte[10-aliasBytes.length]);
-		}else{
-			bf.put(aliasBytes,0,10);
+			bf.put(new byte[8 - aliasBytes.length]);
+		} else
+		{
+			bf.put(aliasBytes, 0, 8);
 		}
 
 		byte[] crcSequence = new byte[19];
-        for (int u = 0; u < crcSequence.length; u++)
-            crcSequence[u] = bf.array()[u];
-        
-		byte crcb = (byte) ((getCRC8(crcSequence) ^ Integer.parseInt(mBTAddress.substring(mBTAddress.length()-2), 16)) & 0xff);
+		for (int u = 0; u < crcSequence.length; u++)
+			crcSequence[u] = bf.array()[u];
+
+		byte crcb = (byte) ((getCRC8(crcSequence) ^ Integer.parseInt(mBTAddress.substring(mBTAddress.length() - 2), 16)) & 0xff);
 		bf.put(crcb);
 		return bf.array();
 	}
