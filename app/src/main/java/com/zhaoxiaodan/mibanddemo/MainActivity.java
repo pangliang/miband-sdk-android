@@ -56,6 +56,7 @@ public class MainActivity extends Activity
 			"showServicesAndCharacteristics",
 			"read_rssi",
 			"battery_info",
+			"setUserInfo",
 			"setHeartRateNotifyListener",
 			"startHeartRateScan",
 			"miband.startVibration(VibrationMode.VIBRATION_WITH_LED);",
@@ -73,7 +74,6 @@ public class MainActivity extends Activity
 			"setSensorDataNotifyListener",
 			"enableSensorDataNotify",
 			"disableSensorDataNotify",
-			"setUserInfo",
 			"pair",
 	};
 
@@ -172,6 +172,13 @@ public class MainActivity extends Activity
 						}
 					});
 				}
+				else if (position == menuIndex++)
+				{
+					UserInfo userInfo = new UserInfo(20271234, 1, 32, 160, 40, "1哈哈", 0);
+					Log.d(TAG, "setUserInfo:" + userInfo.toString() + ",data:" + Arrays.toString(userInfo.getBytes(miband.getDevice().getAddress())));
+					miband.setUserInfo(userInfo);
+				}
+
 				else if (position == menuIndex++)
 				{
 
@@ -282,12 +289,6 @@ public class MainActivity extends Activity
 				else if (position == menuIndex++)
 				{
 					miband.disableSensorDataNotify();
-				}
-				else if (position == menuIndex++)
-				{
-					UserInfo userInfo = new UserInfo(20271234, 1, 32, 160, 40, "1哈哈", 0);
-					Log.d(TAG, "setUserInfo:" + userInfo.toString() + ",data:" + Arrays.toString(userInfo.getBytes(miband.getDevice().getAddress())));
-					miband.setUserInfo(userInfo);
 				}
 				else if (position == menuIndex++)
 				{
