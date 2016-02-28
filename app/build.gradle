@@ -22,5 +22,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
-    compile project(':miband-sdk')
+//    compile project(':miband-sdk')
+    compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
 }

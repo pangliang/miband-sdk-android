@@ -4,6 +4,15 @@
 
 [![Join the chat at https://gitter.im/pangliang/miband-sdk-android](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pangliang/miband-sdk-android?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+##使用
+
+在项目的`build.gradle`文件的依赖部分添加:
+
+```
+compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
+```
+
+
 ## TODO
 - 重构BluetoothIO为同步方式
 - 重力感应原始数据获取
@@ -29,16 +38,16 @@
 
 ## Release Notes
 
-### 1.1.02221306 - 2016-02-22
+### 1.1.2 - 2016-02-22
 
 - 修复setUserInfo导致的蓝牙断开问题. 当设置的`userid`跟之前设置的不一样时, 手环会闪动并震动, 这个时候需要拍一下手环, 就像官方app配对时一样;当设置的userid跟之前一样时 手环无反应;
 - 获取心跳扫描之前, 必须做setUserInfo 操作
 
-### 1.1.02031506 - 2016-02-03
+### 1.1.1 - 2016-02-03
 
 - 支持获取心跳扫描数据
 
-### 1.0.11201903 - 2015-11-20
+### 1.0.1 - 2015-11-20
 
 - 扫描附近的Le设备, 附近存在多个手环时可以选择连接
 - 添加设备断开监听器
@@ -47,12 +56,9 @@
 - 重力感应数据不可用
 - 心跳版好像是单色led灯, 无法设置led颜色; 原版可以
 
-### 1.0.07171543 - 2015-08-17
+### 1.0.0 - 2015-08-17
 
 - 获取动力感应器数据
-
-### 1.0.05271733 - 2015-05-27
-
 - 设置用户信息
 - 获取实时步数通知
 - 震动手环
