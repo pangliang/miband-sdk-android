@@ -122,9 +122,11 @@ miband.setDisconnectedListener(new NotifyListener()
 });
 
 // 设置UserInfo, 心跳检测之前必须设置
-// 当 设置的 userid 跟之前设置的不一样时, 手环会闪动并震动, 这个时候, 需要拍一下手环; 就像官方app 配对时一样
-// 当 设置的 userid 跟之前一样时 手环无反应;
-UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 1);
+// 当最后一个参数Type 为 1, 每次手环都会闪烁并震动, 这个时候, 需要拍一下手环, 以确认配对; 就像官方app 配对时一样
+// 当 Type为0, 只有当设置的 userid 跟之前设置的不一样时, 才需要确认配对;
+// 当 Type为0, 且 设置的 userid 跟之前一样时 手环无反应; 会在normal notify 收到一个值为3的通知
+
+UserInfo userInfo = new UserInfo(20111111, 1, 32, 180, 55, "胖梁", 0);
 miband.setUserInfo(userInfo);
 
 // 设置心跳扫描结果通知
