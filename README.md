@@ -1,24 +1,12 @@
-# miband-sdk-android
+# 停止维护
 
-##讨论室
+非常抱歉! 因为官方app的'协议'不停的变动, 我自己本身又没有使用这个sdk的需求, 加上最近也比较忙, 所以不打算维护了. 
+如果你还是想继续捣鼓sdk, 可以参考我的一篇笔记 和 一个反编译的工程 对新版app的协议进行研究.
 
-[![Join the chat at https://gitter.im/pangliang/miband-sdk-android](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pangliang/miband-sdk-android?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[小米手环协议研究](http://www.zhaoxiaodan.com/android/%E5%B0%8F%E7%B1%B3%E6%89%8B%E7%8E%AF%E8%93%9D%E7%89%99%E5%8D%8F%E8%AE%AE%E7%A0%94%E7%A9%B6.html)
 
-##使用
+[小米app反编译工程](https://github.com/pangliang/xiaomi-health-app-decompile)
 
-在项目的`build.gradle`文件的依赖部分添加:
-
-```
-compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
-```
-
-
-## TODO
-- 重构BluetoothIO为同步方式
-- 重力感应原始数据获取
-- 获取及设置睡眠信息
-- 按时段获取及设置运动信息
-- 收集通知类型
 
 ## 当前测试通过固件版本
 
@@ -35,6 +23,14 @@ compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
 
 - 固件版本: 4.15.12.10
 - 心率版本: 1.3.74.64
+
+##使用
+
+在项目的`build.gradle`文件的依赖部分添加:
+
+```
+compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
+```
 
 ## Release Notes
 
