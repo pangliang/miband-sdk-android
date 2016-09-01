@@ -1,6 +1,6 @@
 # 停止维护
 
-非常抱歉! 因为官方app的'协议'不停的变动, 我自己本身又没有使用这个sdk的需求, 加上最近也比较忙, 所以不打算维护了. 
+非常抱歉! 因为官方app的'协议'不停的变动, 我自己本身又没有使用这个sdk的需求, 加上最近也比较忙, 所以不打算维护了.
 如果你还是想继续捣鼓sdk, 可以参考我的一篇笔记 和 一个反编译的工程 对新版app的协议进行研究.
 
 [小米手环协议研究](http://www.zhaoxiaodan.com/android/%E5%B0%8F%E7%B1%B3%E6%89%8B%E7%8E%AF%E8%93%9D%E7%89%99%E5%8D%8F%E8%AE%AE%E7%A0%94%E7%A9%B6.html)
@@ -63,6 +63,7 @@ compile 'com.zhaoxiaodan.miband:miband-sdk:1.1.2'
 - 获取信号强度RSSI值信息
 
 ## API
+**必须在同一线程下调用方法，否则将会出现方法失效的问题！！！**
 
 ```java
 
@@ -92,13 +93,13 @@ MiBand.stopScan(scanCallback);
 
 // 连接, 指定刚才扫描到的设备中的一个
 miband.connect(device, new ActionCallback() {
-						
+
 	@Override
 	public void onSuccess(Object data)
 	{
 		Log.d(TAG,"connect success");
 	}
-	
+
 	@Override
 	public void onFail(int errorCode, String msg)
 	{
@@ -140,13 +141,13 @@ miband.startHeartRateScan();
 
 // 读取和连接设备的信号强度Rssi值
 miband.readRssi(new ActionCallback() {
-		
+
 	@Override
 	public void onSuccess(Object data)
 	{
 		Log.d(TAG, "rssi:"+(int)data);
 	}
-	
+
 	@Override
 	public void onFail(int errorCode, String msg)
 	{
@@ -156,7 +157,7 @@ miband.readRssi(new ActionCallback() {
 
 // 读取手环电池信息
 miband.getBatteryInfo(new ActionCallback() {
-		
+
 	@Override
 	public void onSuccess(Object data)
 	{
@@ -164,7 +165,7 @@ miband.getBatteryInfo(new ActionCallback() {
 		Log.d(TAG, info.toString());
 		//cycles:4,level:44,status:unknow,last:2015-04-15 03:37:55
 	}
-	
+
 	@Override
 	public void onFail(int errorCode, String msg)
 	{
@@ -186,7 +187,7 @@ miband.stopVibration();
 
 //获取普通通知, data一般len=1, 值为通知类型, 类型暂未收集
 miband.setNormalNotifyListener(new NotifyListener() {
-		
+
 	@Override
 	public void onNotify(byte[] data)
 	{
@@ -199,7 +200,7 @@ miband.setNormalNotifyListener(new NotifyListener() {
 // 1.设置监听器
 
 miband.setRealtimeStepsNotifyListener(new RealtimeStepsNotifyListener() {
-		
+
 	@Override
 	public void onNotify(int steps)
 	{
@@ -246,7 +247,7 @@ miband.pair(new ActionCallback() {
 	{
 		changeStatus("pair succ");
 	}
-	
+
 	@Override
 	public void onFail(int errorCode, String msg)
 	{
